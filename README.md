@@ -19,4 +19,5 @@ telegram_chat_id = "" // yout chat id
 
 - Add to run.sh path to your backup-script.py file
 
-Script for create full backup with support images, arhives and compressions.
+
+### Script for create full backup with support images, arhives and compressions.
