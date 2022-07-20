@@ -104,5 +104,3 @@ def createRequest(msg):
 
 if __name__ == "__main__":
 	main()
-
-# TODO: remove old copy (>= 2)
