@@ -4,6 +4,7 @@
 - OS: Linux
 - dd
 - zstd
+- python 3
 
 ## Periodic backup
 - terminal: crontab -e. Add to end file: 1 1 1 * * /your_path_to_script/run.sh
@@ -20,4 +21,4 @@ telegram_chat_id = "" // yout chat id
 - Add to run.sh path to your backup-script.py file
 
 
-### Script for create full backup with support images, arhives and compressions.
+### Script for create full backup with support images, archives and compressions.
