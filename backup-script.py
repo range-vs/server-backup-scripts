@@ -12,9 +12,7 @@ from pathlib import Path
 
 endpoint = "https://api.telegram.org/bot" + pass_server.telegram_bot_id + "/sendMessage?chat_id=" + pass_server.telegram_chat_id + "&text="
 extImgDisk = ".img.gz"
-outputPathOSImg = "/mnt/Backup/os/"
-outputPathFilesImg = "/mnt/Backup/files/"
-outputPathAndNameOSImg = outputPathOSImg + "os_image_disk_"
+outputPathFilesImg = "/media/range/Backup/files/"
 outputPathAndNameFilesImg = outputPathFilesImg + "files_image_disk_"
 extImgDiskZstd = ".zst"
 
@@ -25,14 +23,10 @@ def main():
     
     createRequest("[" + "%s-%s-%s %s:%s:%s" % (e.day, e.month, e.year, e.hour, e.minute, e.second) + "] Start create backups")
 
-    osImg = outputPathAndNameOSImg + currentDateTime + extImgDisk
-    removeOldArchives(outputPathOSImg)
-    createImgDisk("/dev/sdb", osImg)
-    compressedImgDisk(osImg)
-
     filesImg = outputPathAndNameFilesImg + currentDateTime + extImgDisk
-    removeOldArchives(outputPathFilesImg)
-    createImgDisk("/dev/md0", filesImg)
+    if not removeOldArchives(outputPathFilesImg):
+        return
+    createImgDisk("/dev/md/0", filesImg)
     compressedImgDisk(filesImg)
 
     eEnd = datetime.datetime.now()
@@ -44,17 +38,26 @@ def main():
 
 
 
-def removeOldArchives(outputPath):
+def removeOldArchives(outputPath) -> bool:
+    if not os.path.exists(outputPath):
+        createRequest("Path : " + outputPath + " isn't exist! Creating...") 
+        try:
+            os.makedirs(outputPath, exist_ok=True)
+            createRequest("Path : " + outputPath + " created") 
+        except:
+            createRequest("Path : " + outputPath + " didn't created! Aborted script") 
+            return False
     files = sorted(Path(outputPath).iterdir(), key=os.path.getmtime)
     if(len(files) < 2):
-        return
+        return True
     for file in files:
         if(len(os.listdir(outputPath)) == 1):
-            return
+            return True
         f = os.path.join(outputPath, file)
         print(f)
         os.remove(f)
         createRequest("[Correct] Remove old img disk: " + f)
+        return True
 
 def createImgDisk(disk, outputPathAndName):
     cmd_pass = subprocess.Popen(["echo",pass_server.sudo_password], stdout=subprocess.PIPE)
